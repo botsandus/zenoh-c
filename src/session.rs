@@ -154,7 +154,7 @@ pub extern "C" fn z_obtain_shm_provider(
             out_state.write(z_shm_provider_state::DISABLED);
             result::Z_EUNAVAILABLE
         }
-        ShmProviderState::Initializing => {
+        ShmProviderState::Initializing(_) => {
             out_state.write(z_shm_provider_state::INITIALIZING);
             result::Z_EUNAVAILABLE
         }
