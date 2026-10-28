@@ -52,6 +52,7 @@ else()
 endif()
 declare_cache_var(ZENOHC_MSRV_1_75 FALSE BOOL "Ensure that zenoh-c can be built with Rust 1.75 by pinning dependencies to compatible versions")
 if (ZENOHC_MSRV_1_75)
+	message(FATAL_ERROR "The coordinated Dexory Zenoh 1.10.2 candidate requires Rust >= 1.88; the old MSRV fallback cannot use this cohort")
 	message(STATUS "Due to ZENOHC_MSRV_1_75 setting the ZENOHC_COPY_SOURCE_CARGO_LOCK and ZENOHC_BUILD_IN_SOURCE_TREE cache variables are forcibly set to FALSE to avoid build failures due to incompatible source Cargo.lock file")
 	# forcibly set ZENOHC_COPY_SOURCE_CARGO_LOCK to FALSE: the source Cargo.lock
 	# is incompatible with Rust 1.75 and will cause build failure if copied to build directory
@@ -262,7 +263,7 @@ set_genexpr_condition(libs DEBUG $<CONFIG:Debug> "${libsd}" "${libsr}")
 set_genexpr_condition(cargo_flags DEBUG $<CONFIG:Debug>
 	"--manifest-path=${cargo_toml_dir_debug}/Cargo.toml"
 	"--release;--manifest-path=${cargo_toml_dir_release}/Cargo.toml")
-set(cargo_flags ${cargo_flags} ${ZENOHC_CARGO_FLAGS})
+set(cargo_flags ${cargo_flags} --locked ${ZENOHC_CARGO_FLAGS})
 
 if(ZENOHC_BUILD_WITH_SHARED_MEMORY)
 	set(cargo_flags ${cargo_flags} --features=shared-memory)
