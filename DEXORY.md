@@ -12,9 +12,15 @@ CMake builds use the committed lockfile and `--locked`.
 
 ```sh
 cmake -S . -B build -DZENOHC_BUILD_WITH_SHARED_MEMORY=ON -DZENOHC_BUILD_WITH_UNSTABLE_API=ON
-cmake --build build -j4
-ctest --test-dir build --output-on-failure
+cmake --build build --target tests -j4
+# Match the upstream dynamic-library CI exclusions.
+ctest --test-dir build --output-on-failure -E "(unit_z_api_alignment_test|build_z_build_static)"
 ```
+
+Ensure the test executables load this build’s `libzenohc.so` (`ldd` on Linux);
+an older library on `LD_LIBRARY_PATH` can silently invalidate the result.
+Upstream excludes `unit_z_api_alignment_test`, which assumes exactly one external
+scouting responder. The other 23 shared-library CTest cases passed with this core.
 
 Use Zenoh-C++ 1.10.2 (`20eb0bef670e150d3750ca0739dcb28cd7909e2e`) with these
 headers and this native library. This is a test candidate, not fleet qualification.
